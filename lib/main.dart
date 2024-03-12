@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:lab2/registration_screen.dart';
+import 'package:lab2/profile_screen.dart';
+import 'package:lab2/home_screen.dart';
+import 'package:lab2/login_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -8,98 +12,118 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: '~Laboratory work #1',
-      home: IncrementScreen(),
+      title: 'Моя програма',
+      theme: ThemeData(
+        primaryColor: Colors.purple.shade200,
+      ),
+      initialRoute: '/', // початковий маршрут
+      routes: {
+        '/': (context) => MyHomePage(),
+        '/registration': (context) => RegistrationWidget(), // використовуємо RegistrationWidget замість RegistrationScreen
+        '/profile': (context) => ProfileScreen(),
+        '/home': (context) => HomeScreen(),
+        '/login': (context) => LoginScreen(),
+      },
     );
   }
 }
 
-class IncrementScreen extends StatefulWidget {
-  @override
-  _IncrementScreenState createState() => _IncrementScreenState();
-}
 
-class _IncrementScreenState extends State<IncrementScreen> {
-  int _counter = 0;
-  TextEditingController _textEditingController = TextEditingController();
-  String _errorMessage = '';
-
+class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.purple.shade100,
       appBar: AppBar(
-        title: Text('Incrementing'),
-        backgroundColor: Colors.pink, // зміна кольору панелі
+        title: Text('About us'),
       ),
-      backgroundColor: Colors.white, // зміна кольору фону вікна
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            TextField(
-              controller: _textEditingController,
-              onChanged: (value) {
-                setState(() {
-                  if (value.toLowerCase() == "avada kedavra") {
-                    _errorMessage = '';
-                  } else if (isNumeric(value)) {
-                    _errorMessage = '';
-                  } else {
-                    _errorMessage = 'Error: Only numbers are accepted';
-                  }
-                });
-              },
-              decoration: InputDecoration(
-                labelText: 'Enter text',
-                hintText: 'Enter a number or "Avada Kedavra"',
-                errorText: _errorMessage.isNotEmpty ? _errorMessage : null,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                filled: true,
-                fillColor: Colors.grey[200],
-              ),
-            ),
-            SizedBox(height: 20),
-            Text(
-              '$_counter',
-              style: TextStyle(fontSize: 40),
-            ),
-          ],
+        child: Text(
+          'Task Manager',
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          setState(() {
-            String text = _textEditingController.text;
-            if (text.toLowerCase() == "avada kedavra") {
-              _counter = 0;
-              _errorMessage = '';
-            } else if (isNumeric(text)) {
-              _counter += int.parse(text);
-              _errorMessage = '';
-            } else {
-              _errorMessage = 'Error: Only numbers are accepted';
-            }
-            _textEditingController.clear();
-          });
-        },
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ),
+      drawer: DrawerMain(selected: 'about'),
     );
   }
+}
 
-  bool isNumeric(String s) {
-    if (s == null) {
-      return false;
-    }
-    return double.tryParse(s) != null;
-  }
+class DrawerMain extends StatefulWidget {
+  DrawerMain({Key? key, required this.selected}) : super(key: key);
+
+  final String selected;
 
   @override
-  void dispose() {
-    _textEditingController.dispose();
-    super.dispose();
+  DrawerMainState createState() => DrawerMainState();
+}
+
+class DrawerMainState extends State<DrawerMain> {
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: <Widget>[
+          DrawerHeader(
+            child: Text(
+              'TASK MANAGER',
+              style: TextStyle(
+                color: Colors.limeAccent.shade100,
+                fontSize: 40.0,
+                fontWeight: FontWeight.bold,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+            decoration: BoxDecoration(
+              color: Colors.purple.shade200,
+            ),
+          ),
+          ListTile(
+            selected: widget.selected == 'about',
+            leading: Icon(Icons.info),
+            title: Text('About us'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, '/');
+            },
+          ),
+          ListTile(
+            selected: widget.selected == 'registration',
+            leading: Icon(Icons.person_add),
+            title: Text('Registration'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, '/registration');
+            },
+          ),
+          ListTile(
+            selected: widget.selected == 'profile',
+            leading: Icon(Icons.account_circle),
+            title: Text('Profile'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, '/profile');
+            },
+          ),
+          ListTile(
+            selected: widget.selected == 'home', // встановлюємо активний елемент для HomeScreen
+            leading: Icon(Icons.home),
+            title: Text('Home Page'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, '/home'); // переходимо на екран HomeScreen
+            },
+          ),
+          ListTile(
+            selected: widget.selected == 'login', // встановлюємо активний елемент для LoginScreen
+            leading: Icon(Icons.login),
+            title: Text('LogIn'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, '/login'); // переходимо на екран LoginScreen
+            },
+          ),
+        ],
+      ),
+    );
   }
 }
